@@ -2,6 +2,14 @@ resource "google_service_account" "gke_nodes" {
   account_id   = "gke-nodes"
   display_name = "GKE Nodes"
 }
+
+resource "google_service_account_iam_member" "terraform_can_impersonate_gke_nodes" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/gke-nodes@${var.project_id}.iam.gserviceaccount.com"
+
+  role   = "roles/iam.serviceAccountUser"
+  member = "serviceAccount:github-terraform@${var.project_id}.iam.gserviceaccount.com"
+}
+
 resource "google_container_cluster" "this" {
   name     = var.cluster_name
   location = var.region
