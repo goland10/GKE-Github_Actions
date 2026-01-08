@@ -1,6 +1,6 @@
 locals {
   environment  = "dev"
-  cluster_name = "gke-${local.environment}-me-west1"
+  cluster_name = "${local.environment}-${var.region}"
 }
 
 module "network" {

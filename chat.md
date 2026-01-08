@@ -1,5 +1,5 @@
 Excellent decision 👍
-For someone with **3 years DevOps / SRE experience**, **one strong, realistic GitHub project** can *materially* increase recruiter confidence — **if it looks like real production work**, not a tutorial.
+For someone with **4 years DevOps / SRE experience**, **one strong, realistic GitHub project** can *materially* increase recruiter confidence — **if it looks like real production work**, not a tutorial.
 
 Below is a **complete, recruiter-approved project plan**. If you follow this, you’ll have a repo that *actually gets opened*.
 

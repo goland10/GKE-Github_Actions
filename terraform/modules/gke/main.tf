@@ -5,12 +5,16 @@ resource "google_container_cluster" "this" {
   network    = var.network
   subnetwork = var.subnetwork
   deletion_protection = false
+
+  # We can't create a cluster with no node pool defined, but we want to only use
+  # separately managed node pools. So we create the smallest possible default
+  # node pool and immediately delete it.
   remove_default_node_pool = true
   initial_node_count       = 1
   
   node_config {
-    #machine_type = "e2-medium"
-    disk_size_gb = 12
+    machine_type = "e2-medium"      # Minimal stable machine type
+    disk_size_gb = 12               # Minimal boot disk size
   }
 
   workload_identity_config {
@@ -32,5 +36,39 @@ resource "google_container_cluster" "this" {
 
   monitoring_config {
     enable_components = ["SYSTEM_COMPONENTS"]
+  }
+}
+
+resource "google_container_node_pool" "primary" {
+  name       = "primary-pool"
+  location   = var.region
+  cluster    = google_container_cluster.this.name
+  node_count = 1
+  #node_locations = ["me-west1-a", "me-west1-b"]
+
+  autoscaling {
+    min_node_count = 1
+    max_node_count = 2
+  }
+
+  node_config {
+    # Standard on-demand nodes (no spot/preemptible) to avoid instability
+    machine_type = "e2-medium"      # Minimal stable machine type
+    disk_size_gb = 12               # Minimal boot disk size
+    
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+
+    labels = {
+      env = var.environment
+    }
+
+    tags = ["gke-node"]
+
+    shielded_instance_config {
+      enable_secure_boot = true
+      enable_integrity_monitoring = true
+    }
   }
 }
