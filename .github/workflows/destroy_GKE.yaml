@@ -55,7 +55,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="prefix=terraform/gke/${ENVIRONMENT}"
+            -backend-config="prefix=terraform/envs/${ENVIRONMENT}"
 
       - name: Terraform Destroy
         if: github.event.inputs.confirm == 'DESTROY'
