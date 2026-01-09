@@ -9,16 +9,20 @@ This project demonstrates a production-style Kubernetes platform on GCP, built u
     1. Infrastructure Administrator
     2. Service Account Admin
 3. Workload Identity Pool `GitHub Actions Pool` exists and `GitHub Provider` is defined. 
+
 ```bash
 gcloud iam workload-identity-pools create github-pool \
   --project=chatgpt1-goland1 \
   --location=global \
   --display-name="GitHub Actions Pool"
 
-gcloud iam workload-identity-pools providers create-oidc github-provider   --project=chatgpt1-goland1   --location=global   --workload-identity-pool=github-pool   --display-name="GitHub Provider"   --issuer-uri="https://token.actions.githubusercontent.com/"   --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
+gcloud iam workload-identity-pools providers create-oidc github-provider   --project=chatgpt1-goland1   --location=global   \
+--workload-identity-pool=github-pool   --display-name="GitHub Provider"  \
+--issuer-uri="https://token.actions.githubusercontent.com/"   \
+--attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository" \
 --attribute-condition="assertion.repository.startsWith('goland10/')"
-
 ```
+
 4. Federated user has access to SA `github-terraform` with the roles:
     1. Workload Identity User
     2. Service Account Token Creator
@@ -26,17 +30,15 @@ gcloud iam workload-identity-pools providers create-oidc github-provider   --pro
 PROJECT_NUMBER=GCP_project_number
 
 Allow the external identity (Federated user) to impersonate the SA:
-gcloud iam service-accounts add-iam-policy-binding \
-  github-terraform@chatgpt1-goland1.iam.gserviceaccount.com \
-  --role=roles/iam.workloadIdentityUser \
-  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/goland10/
+gcloud iam service-accounts add-iam-policy-binding github-terraform@chatgpt1-goland1.iam.gserviceaccount.com \
+--role=roles/iam.workloadIdentityUser \
+--member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/goland10/
 GKE-Github_Actions"
 
 Allow the external identity to create token (to use Cloud Storage for example)
-gcloud iam service-accounts add-iam-policy-binding \
-  github-terraform@chatgpt1-goland1.iam.gserviceaccount.com \
-  --role=roles/iam.serviceAccountTokenCreator \
-  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/goland10/
+gcloud iam service-accounts add-iam-policy-binding  github-terraform@chatgpt1-goland1.iam.gserviceaccount.com \
+--role=roles/iam.serviceAccountTokenCreator \
+--member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/goland10/
 GKE-Github_Actions"
 
 ```
