@@ -60,7 +60,7 @@ resource "google_container_node_pool" "primary" {
     # Standard on-demand nodes (no spot/preemptible) to avoid instability
     machine_type = "e2-medium"      # Minimal stable machine type
     disk_size_gb = 12               # Minimal boot disk size
-    service_account = google_service_account.gke_nodes.email
+    service_account = var.service_account
     
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
