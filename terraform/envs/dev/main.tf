@@ -8,6 +8,10 @@ module "network" {
   region = var.region
 }
 
+module "iam" {
+  source = "../../modules/iam"
+}
+
 module "gke" {
   source = "../../modules/gke"
 
