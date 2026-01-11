@@ -1,5 +1,5 @@
 data "google_service_account" "github_terraform" {
-  account_id = "github-terraform@${var.project_id}.iam.gserviceaccount.com"
+  account_id = var.account_id
 }
 
 resource "google_service_account" "gke_nodes" {
