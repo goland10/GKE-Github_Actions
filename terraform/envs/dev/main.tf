@@ -10,6 +10,7 @@ module "network" {
 
 module "iam" {
   source = "../../modules/iam"
+  account_id = "github-terraform@${var.project_id}.iam.gserviceaccount.com"
 }
 
 module "gke" {
