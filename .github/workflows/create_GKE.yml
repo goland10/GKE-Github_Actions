@@ -65,6 +65,11 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Stop gracefully
+        run: |
+          echo "Intentional stop"
+          exit 0
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
