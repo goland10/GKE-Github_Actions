@@ -41,6 +41,9 @@ jobs:
         working-directory: terraform/gcp
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Validate GKE cluster name
         run: |
           NAME="${{ inputs.cluster_name }}"
@@ -56,10 +59,7 @@ jobs:
           fi
 
           echo "✅ GKE cluster name is valid: $NAME"
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+          
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v3
         with:
