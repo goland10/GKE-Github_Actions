@@ -15,6 +15,10 @@ on:
           - dev
           - staging
           - prod
+      cluster_name:
+        description: "GKE cluster name (only lowercase letters, numbers, and hyphens. Must start with a lowercase letter)"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -37,6 +41,22 @@ jobs:
         working-directory: terraform/envs/${{ github.event.inputs.environment }}
 
     steps:
+      - name: Validate GKE cluster name
+        run: |
+          NAME="${{ inputs.cluster_name }}"
+
+          if [[ ! "$NAME" =~ ^[a-z]([-a-z0-9]{0,38}[a-z0-9])?$ ]]; then
+            echo "❌ Invalid GKE cluster name"
+            echo "Rules:"
+            echo " - 1–40 characters"
+            echo " - lowercase letters, numbers, hyphens"
+            echo " - must start with a letter"
+            echo " - must not end with a hyphen"
+            exit 1
+          fi
+
+          echo "✅ GKE cluster name is valid: $NAME"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -68,11 +88,20 @@ jobs:
       - name: Stop gracefully
         run: |
           echo "Intentional stop"
-          exit 0
+          exit 1
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: |
+          terraform plan \
+            -var="cluster_name=${{ inputs.cluster_name }}" \
+            -var-file="./envs/${{ inputs.environment }}.tfvars" \
+            -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
+        run: |
+          terraform apply \
+            -var="cluster_name=${{ inputs.cluster_name }}" \
+            -var-file="./envs/${{ inputs.environment }}.tfvars" \
+            -auto-approve \
+            tfplan
