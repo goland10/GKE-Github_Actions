@@ -110,7 +110,7 @@ jobs:
             --create-namespace \
 #            --set server.service.type=LoadBalancer \
             --wait \
-            --wait-for-jobs
+            --wait-for-jobs \
             --timeout 20m
 
       - name: Verify Argo CD server is ready
