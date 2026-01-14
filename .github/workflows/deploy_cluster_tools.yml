@@ -106,11 +106,12 @@ jobs:
           helm upgrade --install argocd \
             oci://ghcr.io/argoproj/argo-helm/argo-cd \
             --namespace argocd \
-            --version 7.7.0 \
+#            --version 7.7.0 \
             --create-namespace \
-            --set server.service.type=LoadBalancer \
+#            --set server.service.type=LoadBalancer \
             --wait \
-            --timeout 10m
+            --wait-for-jobs
+            --timeout 20m
 
       - name: Verify Argo CD server is ready
         run: |
@@ -123,4 +124,3 @@ jobs:
           kubectl get svc argocd-server \
             -n argocd \
             -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-      
