@@ -4,8 +4,8 @@ This project demonstrates a production-style deployment of Kubernetes on AWS/GCP
 The automation is intended to be used by dev/staging/prod teams to deploy k8s clusters with a single click.
 
 ## Prerequisits:
-* [GCP prerequisits](docs/prerequisits.md#gcp)
-* [AWS prerequisits](docs/prerequisits.md#aws)
+* [GCP prerequisits](docs/prerequisites.md#gcp)
+* [AWS prerequisits](docs/prerequisites.md#aws)
 
 ## Phase 1 - Create 2 Github Actions workflows
 1. GKE cluster creation using Terrarorm
