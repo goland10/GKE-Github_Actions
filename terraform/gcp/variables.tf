@@ -1,7 +1,57 @@
 #######################################
-# Global / Project
+# Environment identity
+#######################################
+variable "env_name" {
+  description = "Environment name (e.g. dev-01, staging-01, prod-01)"
+  type        = string
+
+  validation {
+    condition     = length(var.env_name) > 0
+    error_message = "env_name must not be empty."
+  }
+}
+
+variable "env_type" {
+  description = "Environment type (dev, staging, prod)"
+  type        = string
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.env_type)
+    error_message = "env_type must be one of: dev, staging, prod."
+  }
+}
+
+#######################################
+# Labels / cost allocation
 #######################################
 
+variable "labels_or_tags" {
+  description = "Common GCP labels applied to GKE cluster and node resources"
+  type        = map(string)
+
+  validation {
+    condition = alltrue([
+      for k, v in var.labels_or_tags :
+      (
+        # key validation
+        can(regex("^[a-z][a-z0-9_]{0,62}$", k))
+        &&
+        # value validation (can be empty, but if not empty must match)
+        (v == "" || can(regex("^[a-z0-9_-]{0,63}$", v)))
+      )
+    ])
+    error_message = <<EOT
+    labels_or_tags must follow GCP label rules:
+    - keys: lowercase letters, numbers, underscores; must start with a letter; max 63 chars
+    - values: lowercase letters, numbers, underscores, hyphens; max 63 chars
+    - uppercase letters are NOT allowed
+    EOT
+  }
+}
+
+#######################################
+# Provider context
+#######################################
 variable "project_id" {
   description = "GCP project ID"
   type        = string
@@ -12,89 +62,139 @@ variable "region" {
   type        = string
 }
 
-#variable "environment" {
-#  description = "Deployment environment"
-#  type        = string
-#
-#  #validation {
-#  #  condition     = contains(["dev", "staging", "prod"], var.environment)
-#  #  error_message = "environment must be one of: dev, staging, prod"
-#  #}
-#}
-
-#######################################
-# IAM
-#######################################
-
-variable "nodes_sa_id" {
-  description = "Service account ID used by GKE nodes"
-  type        = string
-}
-
 #######################################
 # Network
 #######################################
-
-variable "network_name" {
-  description = "VPC network name"
+variable "vpc" {
+  description = "VPC / network name"
   type        = string
 }
 
-variable "subnets" {
-  description = "Subnet configuration per environment"
-  type = map(object({
-    cidr          = string
-    pods_cidr     = string
-    services_cidr = string
-  }))
+variable "nodes_cidr" {
+  description = "CIDR range for worker nodes"
+  type        = string
+}
+
+variable "pods_cidr" {
+  description = "CIDR range for pods"
+  type        = string
+}
+
+variable "services_cidr" {
+  description = "CIDR range for services"
+  type        = string
 }
 
 #######################################
-# GKE Clusters
+# IAM (node service account)
 #######################################
-variable "clusters" {
-  description = "GKE cluster definitions"
+variable "node_identity" {
+  description = "Node service account / identity name"
+  type        = string
+}
 
-  type = map(object({
-    environment      = string
-    region_or_zone   = string
-
-    # Optional: allow per-cluster zone control
-    node_locations = optional(list(string))
-
-    machine_type = string
-    disk_size_gb = number
-
-    node_min   = number
-    node_max   = number
-    node_count = number
-
-    deletion_protection = bool
-    release_channel     = string
-
-    logging_components     = list(string)
-    monitoring_components = list(string)
-  }))
+variable "node_identity_roles" {
+  description = "IAM roles attached to the node service account"
+  type        = list(string)
 
   validation {
-    condition = alltrue([
-      for _, cluster in var.clusters :
-      cluster.node_locations == null
-      || alltrue([
-        for zone in cluster.node_locations :
-        zone != cluster.region_or_zone
+    condition     = length(var.node_identity_roles) > 0
+    error_message = "node_identity_roles must contain at least one role."
+  }
+}
+
+#######################################
+# GKE location
+#######################################
+variable "location" {
+  description = "Region or zone for the GKE cluster"
+  type        = string
+}
+
+variable "node_locations" {
+  description = "Optional additional zones for nodes"
+  type        = list(string)
+  default     = null
+  validation {
+    condition = (
+      var.node_locations == null ||
+      alltrue([
+        for zone in var.node_locations :
+        zone != var.location
       ])
-    ])
+    )
 
     error_message = <<EOT
-    If node_locations is provided, none of its entries may be equal to
-    region_or_zone.
+    node_locations must be null or contain only locations different from 'location'.
 
     Examples:
-    - region_or_zone = europe-west1 → node_locations = ["europe-west1-b"] ✅
-    - region_or_zone = europe-west1-b → node_locations = ["europe-west1-c"] ✅
-    - region_or_zone = europe-west1-b → node_locations = ["europe-west1-b"] ❌
+    - location = europe-west1-b, node_locations = null ✅
+    - location = europe-west1-b, node_locations = ["europe-west1-c"] ✅
+    - location = europe-west1-b, node_locations = ["europe-west1-b"] ❌
     EOT
   }
+}
 
+#######################################
+# GKE node configuration
+#######################################
+variable "node_instance_type" {
+  description = "Node machine / instance type"
+  type        = string
+}
+
+variable "node_disk_size_gb" {
+  description = "Node disk size in GB"
+  type        = number
+}
+
+variable "node_min" {
+  description = "Minimum number of nodes"
+  type        = number
+}
+
+variable "node_max" {
+  description = "Maximum number of nodes"
+  type        = number
+}
+
+variable "node_count" {
+  description = "Initial node count"
+  type        = number
+  validation {
+    condition = (
+      var.node_min <= var.node_count &&
+      var.node_count <= var.node_max
+    )
+
+    error_message = "node_count must be between node_min and node_max."
+  }
+}
+
+#######################################
+# GKE cluster behavior
+#######################################
+variable "deletion_protection" {
+  description = "Enable deletion protection for the GKE cluster"
+  type        = bool
+}
+
+variable "release_channel" {
+  description = "GKE release channel"
+  type        = string
+
+  validation {
+    condition     = contains(["RAPID", "REGULAR", "STABLE"], var.release_channel)
+    error_message = "release_channel must be RAPID, REGULAR, or STABLE."
+  }
+}
+
+variable "logging_components" {
+  description = "Enabled GKE logging components"
+  type        = list(string)
+}
+
+variable "monitoring_components" {
+  description = "Enabled GKE monitoring components"
+  type        = list(string)
 }

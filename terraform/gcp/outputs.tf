@@ -1,65 +1,59 @@
 #######################################
-# Project
+# Environment identity
 #######################################
-
-output "project_id" {
-  description = "GCP project ID"
-  value       = var.project_id
+output "env_name" {
+  description = "Environment name"
+  value       = var.env_name
 }
 
-output "region" {
-  description = "Default GCP region"
-  value       = var.region
+output "env_type" {
+  description = "Environment type"
+  value       = var.env_type
 }
 
 #######################################
 # Network
 #######################################
-
-output "network_name" {
+output "vpc_name" {
   description = "VPC network name"
-  value       = module.network.network_name
+  value       = module.network.vpc_name
 }
 
-output "subnet_names" {
-  description = "Created subnet names"
-  value       = module.network.subnet_names
-}
-
-output "subnet_self_links" {
-  description = "Subnet self-links keyed by environment"
-  value       = module.network.subnet_self_links
+output "subnetwork_name" {
+  description = "Subnetwork name"
+  value       = module.network.subnet_name
 }
 
 #######################################
 # IAM
 #######################################
-
-output "nodes_service_account_email" {
-  description = "Service account email used by GKE nodes"
-  value       = module.iam.nodes_sa_email
+output "node_service_account" {
+  description = "Node service account email"
+  value       = module.iam.node_service_account_email
 }
 
 #######################################
 # GKE
 #######################################
-
-output "gke_clusters" {
-  description = "GKE cluster details keyed by cluster name"
-  value = {
-    for name, mod in module.gke :
-    name => {
-      name     = mod.cluster_name
-      location = mod.location
-      endpoint = mod.cluster_endpoint
-    }
-  }
+output "gke_cluster_name" {
+  description = "GKE cluster name"
+  value       = module.gke.cluster_name
 }
 
-#output "gke_cluster_ids" {
-#  description = "GKE cluster IDs keyed by cluster name"
-#  value = {
-#    for name, mod in module.gke :
-#    name => mod.cluster_id
-#  }
-#}
+output "gke_cluster_location" {
+  description = "GKE cluster location (region or zone)"
+  value       = module.gke.cluster_location
+}
+
+output "gke_cluster_endpoint" {
+  description = "GKE cluster API endpoint"
+  value       = module.gke.endpoint
+}
+
+#######################################
+# Labels / tags
+#######################################
+output "labels_or_tags" {
+  description = "Labels / tags applied to resources"
+  value       = var.labels_or_tags
+}

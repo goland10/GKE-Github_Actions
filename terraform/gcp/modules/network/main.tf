@@ -1,25 +1,24 @@
 resource "google_compute_network" "vpc" {
-  name                    = var.network_name
-  project                 = var.project_id
+  name                    = var.vpc_name
   auto_create_subnetworks = false
+  routing_mode            = "REGIONAL"
+
 }
 
-resource "google_compute_subnetwork" "subnets" {
-  for_each = var.subnets
-
-  name          = "subnet-${each.key}"
-  project       = var.project_id
+resource "google_compute_subnetwork" "subnet" {
+  name          = "${var.vpc_name}-subnet"
   region        = var.region
   network       = google_compute_network.vpc.id
-  ip_cidr_range = each.value.cidr
+  ip_cidr_range = var.nodes_cidr
 
   secondary_ip_range {
     range_name    = "pods"
-    ip_cidr_range = each.value.pods_cidr
+    ip_cidr_range = var.pods_cidr
   }
 
   secondary_ip_range {
     range_name    = "services"
-    ip_cidr_range = each.value.services_cidr
+    ip_cidr_range = var.services_cidr
   }
+
 }

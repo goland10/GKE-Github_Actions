@@ -1,22 +1,12 @@
 resource "google_service_account" "nodes" {
-  account_id   = var.nodes_sa_id
-  display_name = "GKE node service account"
+  account_id   = var.node_identity
+  display_name = "GKE nodes service account (${var.env_name})"
 }
 
-resource "google_project_iam_member" "logging" {
-  project = var.project_id
-  role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.nodes.email}"
-}
+resource "google_project_iam_member" "nodes_roles" {
+  for_each = toset(var.node_identity_roles)
 
-resource "google_project_iam_member" "monitoring" {
   project = var.project_id
-  role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.nodes.email}"
-}
-
-resource "google_project_iam_member" "artifact_registry" {
-  project = var.project_id
-  role    = "roles/artifactregistry.reader"
+  role    = each.value
   member  = "serviceAccount:${google_service_account.nodes.email}"
 }

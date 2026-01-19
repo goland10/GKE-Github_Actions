@@ -1,23 +1,35 @@
-variable "project_id" {
-  description = "GCP project ID"
+variable "vpc_name" {
+  description = "Name of the VPC network"
   type        = string
+
+  validation {
+    condition     = length(var.vpc_name) > 0
+    error_message = "vpc_name must not be empty."
+  }
 }
 
 variable "region" {
-  description = "GCP region"
+  description = "Region where the subnet will be created (e.g. europe-west1)"
   type        = string
 }
 
-variable "network_name" {
-  description = "VPC name"
+variable "nodes_cidr" {
+  description = "CIDR range for GKE worker nodes"
   type        = string
 }
 
-variable "subnets" {
-  description = "Subnet configuration per environment"
-  type = map(object({
-    cidr = string
-    pods_cidr = string
-    services_cidr = string
-  }))
+variable "pods_cidr" {
+  description = "CIDR range for GKE pods"
+  type        = string
+}
+
+variable "services_cidr" {
+  description = "CIDR range for GKE services"
+  type        = string
+}
+
+variable "labels" {
+  description = "Labels / tags applied to network resources"
+  type        = map(string)
+  default     = {}
 }

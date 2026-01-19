@@ -1,62 +1,72 @@
 #######################################
 # Network
 #######################################
-
 module "network" {
   source = "./modules/network"
 
-  project_id   = var.project_id
-  region       = var.region
-  network_name = var.network_name
-  subnets      = var.subnets
+  vpc_name = var.vpc
+  region   = var.region
+
+  nodes_cidr    = var.nodes_cidr
+  pods_cidr     = var.pods_cidr
+  services_cidr = var.services_cidr
+
 }
 
 #######################################
-# IAM
+# IAM – node service account
 #######################################
-
 module "iam" {
-  source      = "./modules/iam"
-  project_id  = var.project_id
-  nodes_sa_id = var.nodes_sa_id
+  source = "./modules/iam"
+
+  project_id = var.project_id
+  env_name   = var.env_name
+
+  node_identity       = var.node_identity
+  node_identity_roles = var.node_identity_roles
+
 }
 
 #######################################
-# GKE Clusters
+# GKE
 #######################################
 
 module "gke" {
-  source   = "./modules/gke"
-  for_each = var.clusters
+  source = "./modules/gke"
 
-  # Naming
-  cluster_name = "${each.key}"
-  environment  = each.value.environment
+  # Environment identity
+  env_name = var.env_name
+  env_type = var.env_type
 
   # Location
-  location       = each.value.region_or_zone
-  node_locations = lookup(each.value, "node_locations", null)
+  location       = var.location
+  node_locations = var.node_locations
+  node_count     = var.node_count
 
-  # Networking
-  network_name    = module.network.network_name
-  subnetwork_name = module.network.subnet_names[each.key]
+  # Network
+  network    = module.network.vpc_name
+  subnetwork = module.network.subnet_name
 
-  # Node pool sizing
-  machine_type = each.value.machine_type
-  disk_size_gb = each.value.disk_size_gb
+  pods_range_name     = module.network.pods_range_name
+  services_range_name = module.network.services_range_name
 
-  node_min   = each.value.node_min
-  node_max   = each.value.node_max
-  node_count = each.value.node_count
+  # IAM
+  node_service_account = module.iam.node_service_account_email
+
+  # Node configuration
+  node_instance_type = var.node_instance_type
+  node_disk_size_gb  = var.node_disk_size_gb
+  node_min           = var.node_min
+  node_max           = var.node_max
 
   # Cluster behavior
-  deletion_protection = each.value.deletion_protection
-  release_channel     = each.value.release_channel
+  deletion_protection = var.deletion_protection
+  release_channel     = var.release_channel
 
-  logging_components     = each.value.logging_components
-  monitoring_components = each.value.monitoring_components
+  # Observability
+  logging_components    = var.logging_components
+  monitoring_components = var.monitoring_components
 
-  # Identity
-  service_account = module.iam.nodes_sa_email
-
+  # Labels / tags
+  labels_or_tags = var.labels_or_tags
 }
