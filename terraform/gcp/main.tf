@@ -22,6 +22,8 @@ module "iam" {
   project_id = var.project_id
   env_name   = var.env_name
 
+  runner_service_account = var.runner_service_account
+
   node_identity       = var.node_identity
   node_identity_roles = var.node_identity_roles
 }

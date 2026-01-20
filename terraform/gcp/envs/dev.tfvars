@@ -1,10 +1,10 @@
 # -------------------------------------------------------------------
 # Environment identity
 # -------------------------------------------------------------------
-env_name = "dev-01"
-env_type = "dev"
-project_id = "github-actions-terraform-k8s"
-runner_service_account = "github-terraform-k8s"
+#env_name = "dev-01"
+#env_type = "dev"
+#project_id = "github-actions-terraform-k8s"
+#runner_service_account = "github-terraform-k8s"
 
 region     = "europe-west1"
 

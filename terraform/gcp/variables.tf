@@ -21,6 +21,11 @@ variable "env_type" {
   }
 }
 
+variable "runner_service_account" {
+  description = "Service account used by GitHub Actions runner"
+  type        = string
+}
+
 #######################################
 # Labels / cost allocation
 #######################################
