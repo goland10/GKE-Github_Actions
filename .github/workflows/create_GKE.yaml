@@ -80,11 +80,6 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Ref: $GITHUB_REF"
 
-      - name: Stop workflow
-        run: |
-          echo "Intentional stop"
-          exit 1
-######################################
       - name: Terraform Init
         run: |
           terraform init \
@@ -110,7 +105,12 @@ jobs:
             -var-file="./envs/${{ inputs.env_type }}.tfvars" \
             -auto-approve \
             tfplan
-
+   
+#      - name: Stop workflow
+#        run: |
+#          echo "Intentional stop"
+#          exit 1
+######################################
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
 
