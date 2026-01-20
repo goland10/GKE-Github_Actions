@@ -34,12 +34,12 @@ output "ca_certificate" {
 
 output "node_pool_name" {
   description = "Name of the primary node pool"
-  value = try(google_container_node_pool.primary[0].name, null)
+  value       = try(google_container_node_pool.primary[0].name, null)
 }
 
 output "node_service_account" {
   description = "Service account used by GKE nodes"
-  value = var.env_type == "dev" ? null : var.node_service_account
+  value       = var.env_type == "dev" ? null : var.node_service_account
 }
 
 #######################################

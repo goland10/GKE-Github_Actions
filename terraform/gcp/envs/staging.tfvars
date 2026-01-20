@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------
 # Environment identity
 # -------------------------------------------------------------------
-env_name = "staging-01"
-env_type = "staging"
+env_name   = "staging-01"
+env_type   = "staging"
 project_id = "github-actions-terraform-k8s"
 region     = "europe-west1"
 
@@ -15,14 +15,14 @@ owner = "ohad"
 # Network
 # -------------------------------------------------------------------
 vpc           = "staging-01"
-nodes_cidr   = "10.10.0.0/16"
+nodes_cidr    = "10.10.0.0/16"
 pods_cidr     = "10.20.0.0/16"
 services_cidr = "10.30.0.0/20"
 
 # -------------------------------------------------------------------
 # IAM (node service account)
 # -------------------------------------------------------------------
-node_identity           = "staging-01-node-identity"
+node_identity = "staging-01-node-identity"
 
 node_identity_roles = [
   "roles/logging.logWriter",
@@ -34,7 +34,7 @@ node_identity_roles = [
 # Location
 # -------------------------------------------------------------------
 #Control plain location.
-location = "europe-west1-d"         # region for regional cluster, zone for zonal cluster
+location = "europe-west1-d" # region for regional cluster, zone for zonal cluster
 
 #node_locations: worker nodes location
 #Only for GKE. 
@@ -45,7 +45,7 @@ location = "europe-west1-d"         # region for regional cluster, zone for zona
 # GKE node configuration
 # -------------------------------------------------------------------
 node_instance_type = "e2-medium"
-node_disk_size_gb = 20
+node_disk_size_gb  = 20
 
 node_min   = 1
 node_max   = 2
@@ -57,5 +57,5 @@ node_count = 1
 deletion_protection = true
 release_channel     = "RAPID"
 
-logging_components     = ["SYSTEM_COMPONENTS"]
+logging_components    = ["SYSTEM_COMPONENTS"]
 monitoring_components = []

@@ -37,8 +37,8 @@ module "gke" {
 
   # IAM
   node_service_account = module.iam.node_service_account_email
-  depends_on = [module.iam]
-  
+  depends_on           = [module.iam]
+
   # Environment identity
   env_name = var.env_name
   env_type = var.env_type

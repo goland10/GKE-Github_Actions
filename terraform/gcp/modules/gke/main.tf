@@ -5,10 +5,10 @@ data "google_client_config" "current" {}
 #######################################
 
 resource "google_container_cluster" "this" {
-  name     = var.env_name
+  name = var.env_name
 
   # Location
-  location = var.location
+  location       = var.location
   node_locations = var.node_locations
 
   # Networking
@@ -38,15 +38,15 @@ resource "google_container_cluster" "this" {
     workload_pool = "${data.google_client_config.current.project}.svc.id.goog"
   }
 
-# Cluster behavior
-  deletion_protection     = var.deletion_protection
+  # Cluster behavior
+  deletion_protection      = var.deletion_protection
   remove_default_node_pool = var.env_type != "dev"
   initial_node_count       = var.env_type == "dev" ? var.node_count : 1
 
   release_channel {
     channel = var.release_channel
   }
-  
+
   # Observability
   logging_config {
     enable_components = var.logging_components
@@ -66,9 +66,9 @@ resource "google_container_cluster" "this" {
 resource "google_container_node_pool" "primary" {
   count = var.env_type == "dev" ? 0 : 1
 
-  name     = "primary-pool"
-  cluster = google_container_cluster.this.name
-  location = var.location
+  name           = "primary-pool"
+  cluster        = google_container_cluster.this.name
+  location       = var.location
   node_locations = var.node_locations
 
   # Scaling
