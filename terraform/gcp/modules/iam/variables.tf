@@ -22,3 +22,9 @@ variable "node_identity_roles" {
     error_message = "node_identity_roles must contain at least one role."
   }
 }
+
+#variable "runner_service_account_email" {
+#  description = "Service account used by GitHub Actions runner"
+#  type        = string
+#}
+

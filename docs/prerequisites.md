@@ -48,6 +48,10 @@ To run this automation on GCP successfully, make sure you have completed all the
     gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member=serviceAccount:${WIF_SA_EMAIL}  \
     --role=roles/iam.serviceAccountAdmin    
+
+    gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member=serviceAccount:${WIF_SA_EMAIL}  \
+    --role=roles/resourcemanager.projectIamAdmin 
     ```
 6.  Create Workload Identity Pool `GitHub Actions Pool` and OIDC provider `GitHub Provider`. 
 

@@ -24,6 +24,7 @@ module "iam" {
 
   node_identity       = var.node_identity
   node_identity_roles = var.node_identity_roles
+#  runner_service_account_email = "github-terraform-k8s@github-actions-terraform-k8s.iam.gserviceaccount.com"
 
 }
 
@@ -69,4 +70,5 @@ module "gke" {
 
   # Labels / tags
   labels = local.gcp_labels_aws_tags
+  #depends_on = [module.iam]
 }
