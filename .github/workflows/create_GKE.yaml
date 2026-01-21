@@ -109,7 +109,9 @@ jobs:
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
-
+        with:
+          install_components: gke-gcloud-auth-plugin
+          
       - name: Get K8S credentials
         run: |
           gcloud container clusters get-credentials \
