@@ -49,7 +49,7 @@ jobs:
 
       - name: Validate K8S environment (cluster) name
         run: |
-          NAME="${{inputs.env_type}}-{{inputs.env_number}}"
+          NAME="${{inputs.env_type}}-${{inputs.env_number}}"
 
           if [[ ! "$NAME" =~ ^[a-z]([-a-z0-9]{0,38}[a-z0-9])?$ ]]; then
             echo "❌ Invalid K8S cluster name"
@@ -93,7 +93,7 @@ jobs:
           terraform plan \
             -var="env_type=${{ inputs.env_type }}" \
             -var="env_number=${{ inputs.env_number }}" \
-            -var-file="./envs/${{inputs.env_type}}-{{inputs.env_number}}.tfvars" \
+            -var-file="./envs/${{inputs.env_type}}-${{inputs.env_number}}.tfvars" \
             -out=tfplan
 
       - name: Terraform Apply
@@ -102,7 +102,7 @@ jobs:
           terraform apply \
             -var="env_type=${{ inputs.env_type }}" \
             -var="env_number=${{ inputs.env_number }}" \
-            -var-file="./envs/${{inputs.env_type}}-{{inputs.env_number}}.tfvars" \
+            -var-file="./envs/${{inputs.env_type}}-${{inputs.env_number}}.tfvars" \
             -auto-approve \
             tfplan
 
@@ -114,7 +114,7 @@ jobs:
       - name: Get K8S credentials
         run: |
           gcloud container clusters get-credentials \
-            ${{inputs.env_type}}-{{inputs.env_number}} \
+            ${{inputs.env_type}}-${{inputs.env_number}} \
             --location $(terraform output -raw cluster_location) \
             --project ${{ vars.PROJECT_ID }}
 
