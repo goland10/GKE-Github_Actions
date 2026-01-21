@@ -18,7 +18,7 @@ on:
           - dev
           - staging
           - prod
-      env_name:
+      env_number:
         description: "K8S environment (cluster) name (only lowercase letters, numbers, and hyphens. Must start with a lowercase letter)"
         required: true
         type: string
@@ -49,7 +49,7 @@ jobs:
 
       - name: Validate K8S environment (cluster) name
         run: |
-          NAME="${{ inputs.env_name }}"
+          NAME="${{ inputs.env_number }}"
 
           if [[ ! "$NAME" =~ ^[a-z]([-a-z0-9]{0,38}[a-z0-9])?$ ]]; then
             echo "❌ Invalid K8S cluster name"
@@ -83,7 +83,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="prefix=${{ inputs.env_type }}/${{ inputs.env_name }}"
+            -backend-config="prefix=${{ inputs.env_type }}/${{ inputs.env_number }}"
 
       - name: Terraform Validate
         run: terraform validate
@@ -92,8 +92,8 @@ jobs:
         run: |
           terraform plan \
             -var="env_type=${{ inputs.env_type }}" \
-            -var="env_name=${{ inputs.env_name }}" \
-            -var-file="./envs/${{inputs.env_name}}.tfvars" \
+            -var="env_number=${{ inputs.env_number }}" \
+            -var-file="./envs/${{inputs.env_type}}-{{inputs.env_number}}.tfvars" \
             -out=tfplan
 
       - name: Terraform Apply
@@ -101,8 +101,8 @@ jobs:
         run: |
           terraform apply \
             -var="env_type=${{ inputs.env_type }}" \
-            -var="env_name=${{ inputs.env_name }}" \
-            -var-file="./envs/${{inputs.env_name}}.tfvars" \
+            -var="env_number=${{ inputs.env_number }}" \
+            -var-file="./envs/${{inputs.env_type}}-{{inputs.env_number}}.tfvars" \
             -auto-approve \
             tfplan
 
@@ -114,7 +114,7 @@ jobs:
       - name: Get K8S credentials
         run: |
           gcloud container clusters get-credentials \
-            ${{ inputs.env_name }} \
+            ${{inputs.env_type}}-{{inputs.env_number}} \
             --location $(terraform output -raw cluster_location) \
             --project ${{ vars.PROJECT_ID }}
 
