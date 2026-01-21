@@ -3,7 +3,7 @@
 #######################################
 output "env_name" {
   description = "Environment name"
-  value       = var.env_name
+  value       = local.env_name
 }
 
 output "env_type" {

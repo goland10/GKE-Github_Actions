@@ -1,7 +1,7 @@
 locals {
   gcp_labels_aws_tags = {
     env_type = var.env_type
-    env_name = var.env_name
+    env_name = local.env_name
     owner    = var.owner
     project  = "k8s-terraform"
   }
