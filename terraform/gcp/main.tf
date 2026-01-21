@@ -21,7 +21,7 @@ module "iam" {
   source = "./modules/iam"
 
   project_id = var.project_id
-  env_name   = var.env_name
+  env_name   = local.env_name
 
   runner_service_account = var.runner_service_account
 
