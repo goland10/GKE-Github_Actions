@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------
 # Environment identity
 # -------------------------------------------------------------------
-env_type = "dev"
-env_number = 01
+#env_type = "dev"
+#env_number = 01
 #env_name = "dev-01"
 #project_id = "github-actions-terraform-k8s"
 #runner_service_account = "github-terraform-k8s"
