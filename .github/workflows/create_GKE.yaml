@@ -19,7 +19,7 @@ on:
           - staging
           - prod
       env_number:
-        description: "K8S environment (cluster) name (only lowercase letters, numbers, and hyphens. Must start with a lowercase letter)"
+        description: "K8S environment (cluster) number (only lowercase letters, numbers, and hyphens. Must start with a lowercase letter)"
         required: true
         type: string
 
@@ -51,9 +51,9 @@ jobs:
 
       - name: Validate K8S environment (cluster) name
         run: |
-          NAME="${{inputs.env_type}}-${{inputs.env_number}}"
+          env_name="${{inputs.env_type}}-${{inputs.env_number}}"
 
-          if [[ ! "$NAME" =~ ^[a-z]([-a-z0-9]{0,38}[a-z0-9])?$ ]]; then
+          if [[ ! "$env_name" =~ ^[a-z]([-a-z0-9]{0,38}[a-z0-9])?$ ]]; then
             echo "❌ Invalid K8S cluster name"
             echo "Rules:"
             echo " - 1–40 characters"
@@ -63,7 +63,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ K8S cluster name is valid: $NAME"
+          echo "✅ K8S cluster name is valid: $env_name"
 
       - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v3
