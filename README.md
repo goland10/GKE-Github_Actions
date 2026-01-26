@@ -14,11 +14,13 @@ The automation is intended to be used by dev/staging/prod teams to deploy k8s cl
 
 
 ### GKE cluster creation using Terrarorm
-- Use Cloud Storage to store Terraform state (remote backend for consistency) 
+- Authenticate to GCP using Workload Identity Federation without storing service account keys (Security best practice).
+- Use Cloud Storage to store Terraform state (remote backend for consistency)
 - Create dedicated VPC and subnet with 2 secondary ranges (pods, services)
-- Create SA for GKE nodes
-- Create GKE regional cluster with node autoscaling.
-- Create separately managed node pool (best practice)
+- Create dedicated SA for GKE nodes (Security best practice).
+- Create GKE regional cluster with node autoscaling (HA/cost efficiency).
+- Create separately managed node pool (Terraform best practice)
+- Label resources for efficient management and cost savings
 ### GKE cluster destruction using Terrarorm
 - Connect to GCS to retreive the state file and destroy the whole environment. 
 

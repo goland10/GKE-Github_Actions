@@ -5,8 +5,14 @@ This GitHub Actions workflow provisions and manages a **Google Kubernetes Engine
 The workflow is triggered manually and is designed to be **environment-aware**, **idempotent**, and safe to re-run.
 
 ---
-
-## What this automation does
+## Who this automation is intended for?
+This automation is intended to be used by developers/operators.
+## How to run this automation?
+- Download a sample configuration file [dev-01.tfvars](./dev-01.tfvars).
+- Make your customazition.
+- Save it using name format of *env_type-env_number* (e.g. dev-01.tfvars, dev-02.tfvars).
+- Push it to the envs directory and run the automation from the Actions tab.
+## What this automation does?
 
 When triggered, the workflow performs the following steps:
 
